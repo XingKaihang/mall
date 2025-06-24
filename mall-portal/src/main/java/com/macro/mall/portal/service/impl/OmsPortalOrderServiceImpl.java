@@ -251,6 +251,15 @@ public class OmsPortalOrderServiceImpl implements OmsPortalOrderService {
         return result;
     }
 
+    /**
+     * Marks the specified order as paid and deducts actual stock for each ordered item.
+     *
+     * Updates the order status to paid only if it is currently unpaid and not deleted. Deducts stock for each SKU in the order; fails if any deduction is unsuccessful due to insufficient stock.
+     *
+     * @param orderId the ID of the order to update
+     * @param payType the payment method used
+     * @return the total number of stock units deducted
+     */
     @Override
     public Integer paySuccess(Long orderId, Integer payType) {
         //修改订单支付状态
@@ -282,6 +291,11 @@ public class OmsPortalOrderServiceImpl implements OmsPortalOrderService {
         return totalCount;
     }
 
+    /**
+     * Cancels all orders that have timed out without payment, releases locked stock, updates coupon status, and returns used integration points to members.
+     *
+     * @return the number of orders that were canceled due to timeout
+     */
     @Override
     public Integer cancelTimeOutOrder() {
         Integer count=0;
@@ -311,6 +325,13 @@ public class OmsPortalOrderServiceImpl implements OmsPortalOrderService {
         return timeOutOrders.size();
     }
 
+    /**
+     * Cancels an unpaid order by its ID, releases locked stock for each order item, updates coupon usage status to unused, and returns used integration points to the member if applicable.
+     *
+     * If the order is not found or is not in unpaid status, no action is taken. Throws an assertion failure if stock cannot be released for any order item.
+     *
+     * @param orderId the ID of the order to cancel
+     */
     @Override
     public void cancelOrder(Long orderId) {
         //查询未付款的取消订单
@@ -745,7 +766,11 @@ public class OmsPortalOrderServiceImpl implements OmsPortalOrderService {
     }
 
     /**
-     * 锁定下单商品的所有库存
+     * Locks the stock for each SKU in the provided cart promotion items.
+     *
+     * For each item, attempts to reserve the specified quantity by SKU. Fails if any SKU does not have sufficient available stock.
+     *
+     * @param cartPromotionItemList the list of cart items for which to lock stock
      */
     private void lockStock(List<CartPromotionItem> cartPromotionItemList) {
         for (CartPromotionItem cartPromotionItem : cartPromotionItemList) {

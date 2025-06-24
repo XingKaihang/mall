@@ -33,22 +33,37 @@ public interface PortalOrderDao {
     int updateOrderStatus(@Param("ids") List<Long> ids,@Param("status") Integer status);
 
     /**
-     * 解除取消订单的库存锁定
-     */
+ * Releases locked stock for canceled orders based on the provided list of order items.
+ *
+ * @param orderItemList the list of order items for which to release locked stock
+ * @return the number of affected rows
+ */
     int releaseSkuStockLock(@Param("itemList") List<OmsOrderItem> orderItemList);
 
     /**
-     * 根据商品的skuId来锁定库存
-     */
+ * Locks a specified quantity of stock for a product SKU identified by its SKU ID.
+ *
+ * @param productSkuId the ID of the product SKU to lock stock for
+ * @param quantity the quantity of stock to lock
+ * @return the number of records updated in the stock table
+ */
     int lockStockBySkuId(@Param("productSkuId")Long productSkuId,@Param("quantity") Integer quantity);
 
     /**
-     * 根据商品的skuId扣减真实库存
-     */
+ * Decreases the actual stock quantity for a specified product SKU.
+ *
+ * @param productSkuId the ID of the product SKU whose stock will be reduced
+ * @param quantity the number of units to deduct from the actual stock
+ * @return the number of rows affected in the stock table
+ */
     int reduceSkuStock(@Param("productSkuId")Long productSkuId,@Param("quantity") Integer quantity);
 
     /**
-     * 根据商品的skuId释放库存
-     */
+ * Releases a specified quantity of stock for a product SKU by its SKU ID.
+ *
+ * @param productSkuId the ID of the product SKU
+ * @param quantity the quantity of stock to release
+ * @return the number of affected rows
+ */
     int releaseStockBySkuId(@Param("productSkuId")Long productSkuId,@Param("quantity") Integer quantity);
 }
